@@ -1,9 +1,12 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "urql";
+import { useRouter } from "next/router";
 import REGISTER_MUTATION from "../graphql/mutations/registerMutation";
+import { HOME } from "../constants/routes";
 
 const Register = (props) => {
+  const router = useRouter();
   const form = useForm();
   const [updatedData, register] = useMutation(REGISTER_MUTATION);
 
@@ -11,6 +14,7 @@ const Register = (props) => {
     const result = await register(data);
     console.log(result);
     console.log((form.errors.errors = result.data.register.errors));
+    router.push(HOME);
   };
 
   return (
