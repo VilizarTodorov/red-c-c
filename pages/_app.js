@@ -11,31 +11,46 @@ const client = createClient({
   url: "http://localhost:4000/graphql",
   fetchOptions: {
     credentials: "include",
-    exchanges: [
-      dedupExchange,
-      cacheExchange({
-        updates: {
-          Mutation: {
-            login: (_result, args, cache, info) => {
-              temp(cache, { query: ME_QUERY }, _result, (result, query) => {
-                if (result.login.errors) {
-                  console.log("a");
-                  return query;
-                } else {
-                  console.log("");
-                  return {
-                    me: result.login.user,
-                  };
-                }
-              });
-            },
-            register: (result, args, cache, info) => {},
+  },
+  exchanges: [
+    dedupExchange,
+    cacheExchange({
+      updates: {
+        Mutation: {
+          logout: (result, args, cache, info) => {
+            cache.updateQuery({ query: ME_QUERY }, (data) => {
+              return {
+                me: null,
+              };
+            });
+          },
+          login: (result, args, cache, info) => {
+            cache.updateQuery({ query: ME_QUERY }, (data) => {
+              if (result.login.errors) {
+                return data;
+              } else {
+                return {
+                  me: result.login.user,
+                };
+              }
+            });
+          },
+          register: (result, args, cache, info) => {
+            cache.updateQuery({ query: ME_QUERY }, (data) => {
+              if (result.login.errors) {
+                return data;
+              } else {
+                return {
+                  me: result.login.user,
+                };
+              }
+            });
           },
         },
-      }),
-      fetchExchange,
-    ],
-  },
+      },
+    }),
+    fetchExchange,
+  ],
 });
 
 function MyApp({ Component, pageProps }) {
