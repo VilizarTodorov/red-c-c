@@ -4,6 +4,8 @@ import { useMutation } from "urql";
 import { useRouter } from "next/router";
 import REGISTER_MUTATION from "../graphql/mutations/registerMutation";
 import { HOME } from "../constants/routes";
+import { withUrqlClient } from "next-urql";
+import createUrqlClient from "../utils/createUrqlClient";
 
 const Register = (props) => {
   const router = useRouter();
@@ -34,4 +36,4 @@ const Register = (props) => {
   );
 };
 
-export default Register;
+export default withUrqlClient(createUrqlClient)(Register);

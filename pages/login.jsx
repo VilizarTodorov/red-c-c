@@ -4,6 +4,8 @@ import { useMutation } from "urql";
 import LOGIN_MUTATION from "../graphql/mutations/loginMutation";
 import { useRouter } from "next/router";
 import { HOME } from "../constants/routes";
+import { withUrqlClient } from "next-urql";
+import createUrqlClient from "../utils/createUrqlClient";
 
 const Login = (props) => {
   const router = useRouter();
@@ -31,4 +33,4 @@ const Login = (props) => {
   );
 };
 
-export default Login;
+export default withUrqlClient(createUrqlClient)(Login);

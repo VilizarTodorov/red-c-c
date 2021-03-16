@@ -1,8 +1,15 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import Navbar from "../components/NavBar";
+import { withUrqlClient } from "next-urql";
+import createUrqlClient from "../utils/createUrqlClient";
+import { useQuery } from "urql";
+import POSTS_QUERY from "../graphql/queries/posts";
 
-export default function Home() {
+const Home = () => {
+  const [result, reexecuteQuery] = useQuery({ query: POSTS_QUERY });
+  const { data, fetching, error } = result;
+
   return (
     <div className={styles.container}>
       <Head>
@@ -12,49 +19,17 @@ export default function Home() {
 
       <main className={styles.main}>
         <Navbar></Navbar>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a href="https://github.com/vercel/next.js/tree/master/examples" className={styles.card}>
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>Instantly deploy your Next.js site to a public URL with Vercel.</p>
-          </a>
-        </div>
+        <h1>Hello World</h1>
+        {!data ? (
+          <div>...loading</div>
+        ) : (
+          data.posts.map((post) => {
+            return <div key={post.id}>{post.title}</div>;
+          })
+        )}
       </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
     </div>
   );
-}
+};
+
+export default withUrqlClient(createUrqlClient, { ssr: true })(Home);

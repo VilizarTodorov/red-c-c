@@ -4,27 +4,21 @@ import { LOGIN, REGISTER } from "../constants/routes";
 import { useMutation, useQuery } from "urql";
 import ME_QUERY from "../graphql/queries/me";
 import LOGOUT_MUTATION from "../graphql/mutations/logoutMutation";
+import { withUrqlClient } from "next-urql";
+import createUrqlClient from "../utils/createUrqlClient";
+import isServerSide from "../utils/isServerSide";
 
 const NavBar = () => {
   const [updatedData, logout] = useMutation(LOGOUT_MUTATION);
-  const [result, reexecuteQuery] = useQuery({ query: ME_QUERY });
+  const [result, reexecuteQuery] = useQuery({ query: ME_QUERY, pause: isServerSide() });
   const { data, fetching, error } = result;
-
-  const temp = async () => {
-    const result = await logout();
-    console.log(result);
-  };
-
-  if (fetching) return <p>Loading...</p>;
-  if (error) return <p>Oh no... {error.message}</p>;
-  console.log(data);
 
   return (
     <nav>
-      {data.me ? (
+      {data?.me ? (
         <Fragment>
           <span>{data.me.username}</span>
-          <button onClick={temp}>logout</button>
+          <button onClick={() => logout()}>logout</button>
         </Fragment>
       ) : (
         <Fragment>
@@ -40,4 +34,4 @@ const NavBar = () => {
   );
 };
 
-export default NavBar;
+export default withUrqlClient(createUrqlClient)(NavBar);
