@@ -1,16 +1,16 @@
 import { gql } from "@urql/core";
+import USER_FRAGMENT from "../fragments/userFragment";
 
 const LOGIN_MUTATION = gql`
-  mutation($username: String!, $password: String!) {
+  ${USER_FRAGMENT}
+  mutation Login($username: String!, $password: String!) {
     login(options: { username: $username, password: $password }) {
+      user {
+        ...UserFragment
+      }
       errors {
         field
         message
-      }
-      user {
-        id
-        email
-        username
       }
     }
   }
