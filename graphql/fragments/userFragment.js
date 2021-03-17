@@ -1,6 +1,6 @@
 import { gql } from "@urql/core";
 
-export const USER_FRAGMENT = gql`
+const USER_FRAGMENT = gql`
   fragment UserFragment on User {
     id
     username
