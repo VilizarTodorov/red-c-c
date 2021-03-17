@@ -22,7 +22,7 @@ const ResetPassword = (props) => {
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)}>
-      <label htmlFor="username">Username</label>
+      <label htmlFor="username">New Password</label>
       <input
         id="newPassword"
         type="password"
@@ -32,7 +32,7 @@ const ResetPassword = (props) => {
       />
       {form.errors.password && <p>Password is required</p>}
 
-      <label htmlFor="repeatPassword">Password</label>
+      <label htmlFor="repeatPassword">Repeat Password</label>
       <input
         id="repeatPassword"
         type="password"
