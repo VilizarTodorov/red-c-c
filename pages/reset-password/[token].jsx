@@ -6,6 +6,7 @@ import { withUrqlClient } from "next-urql";
 import createUrqlClient from "../../utils/createUrqlClient";
 import RESET_PASSWORD_MUTATION from "../../graphql/mutations/resetPasswordMutation";
 import { HOME } from "../../constants/routes";
+import Layout from "../../components/Layout";
 
 const ResetPassword = (props) => {
   const router = useRouter();
@@ -21,28 +22,30 @@ const ResetPassword = (props) => {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      <label htmlFor="username">New Password</label>
-      <input
-        id="newPassword"
-        type="password"
-        name="newPassword"
-        placeholder="New Password"
-        ref={form.register({ required: true })}
-      />
-      {form.errors.password && <p>Password is required</p>}
+    <Layout>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <label htmlFor="username">New Password</label>
+        <input
+          id="newPassword"
+          type="password"
+          name="newPassword"
+          placeholder="New Password"
+          ref={form.register({ required: true })}
+        />
+        {form.errors.password && <p>Password is required</p>}
 
-      <label htmlFor="repeatPassword">Repeat Password</label>
-      <input
-        id="repeatPassword"
-        type="password"
-        name="repeatPassword"
-        placeholder="Repeat Password"
-        ref={form.register()}
-      />
+        <label htmlFor="repeatPassword">Repeat Password</label>
+        <input
+          id="repeatPassword"
+          type="password"
+          name="repeatPassword"
+          placeholder="Repeat Password"
+          ref={form.register()}
+        />
 
-      <button>submit</button>
-    </form>
+        <button>submit</button>
+      </form>
+    </Layout>
   );
 };
 

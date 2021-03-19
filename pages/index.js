@@ -1,10 +1,10 @@
 import Head from "next/head";
 import styles from "../styles/Home.module.css";
-import Navbar from "../components/NavBar";
 import { withUrqlClient } from "next-urql";
 import createUrqlClient from "../utils/createUrqlClient";
 import { useQuery } from "urql";
 import POSTS_QUERY from "../graphql/queries/posts";
+import Layout from "../components/Layout";
 
 const Home = () => {
   const [result, reexecuteQuery] = useQuery({ query: POSTS_QUERY });
@@ -18,15 +18,16 @@ const Home = () => {
       </Head>
 
       <main className={styles.main}>
-        <Navbar></Navbar>
-        <h1>Hello World</h1>
-        {!data ? (
-          <div>...loading</div>
-        ) : (
-          data.posts.map((post) => {
-            return <div key={post.id}>{post.title}</div>;
-          })
-        )}
+        <Layout>
+          <h1>Hello World</h1>
+          {!data ? (
+            <div>...loading</div>
+          ) : (
+            data.posts.map((post) => {
+              return <div key={post.id}>{post.title}</div>;
+            })
+          )}
+        </Layout>
       </main>
     </div>
   );

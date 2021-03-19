@@ -6,6 +6,7 @@ import REGISTER_MUTATION from "../graphql/mutations/registerMutation";
 import { HOME } from "../constants/routes";
 import { withUrqlClient } from "next-urql";
 import createUrqlClient from "../utils/createUrqlClient";
+import Layout from "../components/Layout";
 
 const Register = (props) => {
   const router = useRouter();
@@ -20,19 +21,27 @@ const Register = (props) => {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      <label htmlFor="username">Username</label>
-      <input id="username" type="text" name="username" placeholder="Username" ref={form.register({ required: true })} />
-      {form.errors.username && <p>Username is required</p>}
+    <Layout>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <label htmlFor="username">Username</label>
+        <input
+          id="username"
+          type="text"
+          name="username"
+          placeholder="Username"
+          ref={form.register({ required: true })}
+        />
+        {form.errors.username && <p>Username is required</p>}
 
-      <label htmlFor="password">Password</label>
-      <input id="password" type="password" name="password" placeholder="Password" ref={form.register()} />
+        <label htmlFor="password">Password</label>
+        <input id="password" type="password" name="password" placeholder="Password" ref={form.register()} />
 
-      <label htmlFor="email">Email</label>
-      <input id="email" type="email" name="email" placeholder="email" ref={form.register()} />
+        <label htmlFor="email">Email</label>
+        <input id="email" type="email" name="email" placeholder="email" ref={form.register()} />
 
-      <button>submit</button>
-    </form>
+        <button>submit</button>
+      </form>
+    </Layout>
   );
 };
 

@@ -6,6 +6,7 @@ import { LOGIN } from "../constants/routes";
 import { withUrqlClient } from "next-urql";
 import createUrqlClient from "../utils/createUrqlClient";
 import FORGOT_PASSWORD_MUTATION from "../graphql/mutations/forgotPasswordMutation";
+import Layout from "../components/Layout";
 
 const Login = (props) => {
   const router = useRouter();
@@ -20,13 +21,15 @@ const Login = (props) => {
   };
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)}>
-      <label htmlFor="email">Email</label>
-      <input id="email" type="email" name="email" placeholder="Email" ref={form.register({ required: true })} />
-      {form.errors.email && <p>Email is required</p>}
+    <Layout>
+      <form onSubmit={form.handleSubmit(onSubmit)}>
+        <label htmlFor="email">Email</label>
+        <input id="email" type="email" name="email" placeholder="Email" ref={form.register({ required: true })} />
+        {form.errors.email && <p>Email is required</p>}
 
-      <button>submit</button>
-    </form>
+        <button>submit</button>
+      </form>
+    </Layout>
   );
 };
 

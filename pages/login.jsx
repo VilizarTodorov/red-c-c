@@ -7,6 +7,7 @@ import { HOME } from "../constants/routes";
 import { withUrqlClient } from "next-urql";
 import createUrqlClient from "../utils/createUrqlClient";
 import ForgottenPasswordLink from "../components/ForgottenPassowrdLink";
+import Layout from "../components/Layout";
 
 const Login = (props) => {
   const router = useRouter();
@@ -21,7 +22,7 @@ const Login = (props) => {
   };
 
   return (
-    <Fragment>
+    <Layout>
       <form onSubmit={form.handleSubmit(onSubmit)}>
         <label htmlFor="username">Username</label>
         <input
@@ -39,7 +40,7 @@ const Login = (props) => {
         <button>submit</button>
       </form>
       <ForgottenPasswordLink></ForgottenPasswordLink>
-    </Fragment>
+    </Layout>
   );
 };
 
