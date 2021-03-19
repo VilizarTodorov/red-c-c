@@ -6,19 +6,29 @@ import { useRouter } from "next/router";
 import { HOME } from "../constants/routes";
 import { withUrqlClient } from "next-urql";
 import createUrqlClient from "../utils/createUrqlClient";
-import ForgottenPasswordLink from "../components/ForgottenPassowrdLink";
+import ForgottenPasswordLink from "../components/ForgottenPasswordLink";
 import Layout from "../components/Layout";
+import { useIsAuth } from "../utils/useIsAuth";
 
 const Login = (props) => {
   const router = useRouter();
   const form = useForm();
   const [updatedData, login] = useMutation(LOGIN_MUTATION);
 
+  // useIsAuth();
+
+  const from = () => {
+    const { from } = router.query || { from: HOME };
+    return from;
+  };
+
   const onSubmit = async (data) => {
-    const result = await login(data);
-    console.log(result);
-    console.log((form.errors.errors = result.data.login.errors));
-    router.push(HOME);
+    try {
+      await login(data);
+      router.push(from());
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (

@@ -7,11 +7,14 @@ import Layout from "../components/Layout";
 import { HOME } from "../constants/routes";
 import CREATE_POST_MUTATION from "../graphql/mutations/createPostMutation";
 import createUrqlClient from "../utils/createUrqlClient";
+import { useIsAuth } from "../utils/useIsAuth";
 
 const CreatePost = (props) => {
   const router = useRouter();
   const form = useForm();
   const [updatedData, createPost] = useMutation(CREATE_POST_MUTATION);
+
+  useIsAuth();
 
   const onSubmit = async (data) => {
     try {
