@@ -10,6 +10,7 @@ const POSTS_QUERY = gql`
       points
       title
       creatorId
+      textSnippet
     }
   }
 `;

@@ -1,6 +1,6 @@
 import { cacheExchange } from "@urql/exchange-graphcache";
 import router from "next/router";
-import { dedupExchange, errorExchange, fetchExchange } from "urql";
+import { dedupExchange, errorExchange, fetchExchange, stringifyVariables } from "urql";
 import { LOGIN } from "../constants/routes";
 import ME_QUERY from "../graphql/queries/me";
 
@@ -12,6 +12,11 @@ const createUrqlClient = (ssrExchange) => ({
   exchanges: [
     dedupExchange,
     cacheExchange({
+      resolvers: {
+        Query: {
+          posts: cursorPagination(),
+        },
+      },
       updates: {
         Mutation: {
           logout: (result, args, cache, info) => {
@@ -57,5 +62,26 @@ const createUrqlClient = (ssrExchange) => ({
     fetchExchange,
   ],
 });
+
+const cursorPagination = () => {
+  return (_parent, fieldArgs, cache, info) => {
+    const { parentKey: entityKey, fieldName } = info;
+    const allFields = cache.inspectFields(entityKey);
+    const fieldInfos = allFields.filter((info) => info.fieldName === fieldName);
+    const size = fieldInfos.length;
+    if (size === 0) {
+      return undefined;
+    }
+    const fieldKey = `${fieldName}(${stringifyVariables(fieldArgs)})`;
+    const isInTheCache = cache.resolveFieldByKey(entityKey, fieldKey);
+    info.partial = !isInTheCache;
+    const result = [];
+    fieldInfos.forEach((fi) => {
+      const data = cache.resolveFieldByKey(entityKey, fi.fieldKey);
+      result.push(...data);
+    });
+    return result;
+  };
+};
 
 export default createUrqlClient;
