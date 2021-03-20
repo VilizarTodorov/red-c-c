@@ -8,7 +8,7 @@ import { withUrqlClient } from "next-urql";
 import createUrqlClient from "../utils/createUrqlClient";
 import ForgottenPasswordLink from "../components/ForgottenPasswordLink";
 import Layout from "../components/Layout";
-import { useIsAuth } from "../utils/useIsAuth";
+// import { useIsAuth } from "../utils/useIsAuth";
 
 const Login = (props) => {
   const router = useRouter();
@@ -18,17 +18,12 @@ const Login = (props) => {
   // useIsAuth();
 
   const from = () => {
-    const { from } = router.query || { from: HOME };
-    return from;
+    return router.query.from ? router.query.from : HOME;
   };
 
   const onSubmit = async (data) => {
-    try {
-      await login(data);
-      router.push(from());
-    } catch (err) {
-      console.log(err);
-    }
+    await login(data);
+    router.replace(from());
   };
 
   return (

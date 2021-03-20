@@ -7,7 +7,7 @@ import POSTS_QUERY from "../graphql/queries/posts";
 import Layout from "../components/Layout";
 
 const Home = () => {
-  const [result, reexecuteQuery] = useQuery({ query: POSTS_QUERY });
+  const [result, reexecuteQuery] = useQuery({ query: POSTS_QUERY, variables: { limit: 5 } });
   const { data, fetching, error } = result;
 
   return (
