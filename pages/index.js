@@ -8,10 +8,10 @@ import Layout from "../components/Layout";
 import { useState } from "react";
 
 const Home = () => {
-  const [variables, setVariables] = useState({ limit: 1, cursor: null });
+  const [variables, setVariables] = useState({ limit: 10, cursor: null });
   const [result, reexecuteQuery] = useQuery({ query: POSTS_QUERY, variables });
   const { data, fetching, error } = result;
-  console.log(data)
+  console.log(data);
 
   return (
     <div className={styles.container}>
@@ -26,7 +26,7 @@ const Home = () => {
           {!data ? (
             <div>...loading</div>
           ) : (
-            data.posts.map((post) => {
+            data.posts.posts.map((post) => {
               return (
                 <div style={{ border: "1px solid" }} key={post.id}>
                   <h2>{post.title}</h2>
@@ -35,16 +35,18 @@ const Home = () => {
               );
             })
           )}
-          <button
-            onClick={() => {
-              setVariables({
-                limit: variables.limit,
-                cursor: data.posts[data.posts.length - 1].createdAt,
-              });
-            }}
-          >
-            load more
-          </button>
+          {data.posts.hasMore && (
+            <button
+              onClick={() => {
+                setVariables({
+                  limit: variables.limit,
+                  cursor: data.posts.posts[data.posts.posts.length - 1].createdAt,
+                });
+              }}
+            >
+              load more
+            </button>
+          )}
         </Layout>
       </main>
     </div>
