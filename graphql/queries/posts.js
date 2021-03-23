@@ -8,6 +8,12 @@ const POSTS_QUERY = gql`
         title
         textSnippet
         createdAt
+        updatedAt
+        points
+        creator{
+          id
+          username
+        }
       }
       hasMore
     }

@@ -22,6 +22,16 @@ const createUrqlClient = (ssrExchange) => ({
       },
       updates: {
         Mutation: {
+          createPost: (result, args, cache, info) => {
+            const allFields = cache.inspectFields("Query");
+            console.log(allFields);
+            const fieldInfos = allFields.filter((info) => info.fieldName === "posts");
+            fieldInfos.forEach((fi) => {
+              cache.invalidate("Query", "posts", fi.arguments);
+              console.log(fi);
+              console.log(fieldInfos);
+            });
+          },
           logout: (result, args, cache, info) => {
             cache.updateQuery({ query: ME_QUERY }, (data) => {
               return {
@@ -89,7 +99,7 @@ const cursorPagination = () => {
       }
       result.push(...data);
     });
-    
+
     return { posts: result, hasMore, __typename: "PaginatedPosts" };
   };
 };

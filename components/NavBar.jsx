@@ -1,6 +1,6 @@
 import React, { Fragment } from "react";
 import NextLink from "next/link";
-import { LOGIN, REGISTER } from "../constants/routes";
+import { CREATE_POST, LOGIN, REGISTER } from "../constants/routes";
 import { useMutation, useQuery } from "urql";
 import ME_QUERY from "../graphql/queries/me";
 import LOGOUT_MUTATION from "../graphql/mutations/logoutMutation";
@@ -30,6 +30,9 @@ const NavBar = () => {
           </NextLink>
         </Fragment>
       )}
+      <NextLink href={CREATE_POST}>
+        <a>create post</a>
+      </NextLink>
     </nav>
   );
 };

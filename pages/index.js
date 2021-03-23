@@ -2,16 +2,33 @@ import Head from "next/head";
 import styles from "../styles/Home.module.css";
 import { withUrqlClient } from "next-urql";
 import createUrqlClient from "../utils/createUrqlClient";
-import { useQuery } from "urql";
+import { useMutation, useQuery } from "urql";
 import POSTS_QUERY from "../graphql/queries/posts";
 import Layout from "../components/Layout";
 import { useState } from "react";
+import VOTE_MUTATION from "../graphql/mutations/voteMutation";
+import { DOWN_DOOT_VALUE, UP_DOOT_VALUE } from "../constants/values";
 
 const Home = () => {
   const [variables, setVariables] = useState({ limit: 10, cursor: null });
   const [result, reexecuteQuery] = useQuery({ query: POSTS_QUERY, variables });
   const { data, fetching, error } = result;
-  console.log(data);
+
+  const [updatedData, vote] = useMutation(VOTE_MUTATION);
+
+  const updoot = (postId) => {
+    return async () => {
+      const r = await vote({ value: UP_DOOT_VALUE, postId });
+      console.log(r);
+    };
+  };
+
+  const downdoot = (postId) => {
+    return async () => {
+      const r = await vote({ value: DOWN_DOOT_VALUE, postId });
+      console.log(r);
+    };
+  };
 
   return (
     <div className={styles.container}>
@@ -30,12 +47,16 @@ const Home = () => {
               return (
                 <div style={{ border: "1px solid" }} key={post.id}>
                   <h2>{post.title}</h2>
+                  <h4>posted by: {post.creator.username}</h4>
                   <p>{post.textSnippet}</p>
+                  <p>points: {post.points}</p>
+                  <p onClick={updoot(post.id)}>updoot</p>
+                  <p onClick={downdoot(post.id)}>downdoot</p>
                 </div>
               );
             })
           )}
-          {data.posts.hasMore && (
+          {data?.posts?.posts.hasMore && (
             <button
               onClick={() => {
                 setVariables({
