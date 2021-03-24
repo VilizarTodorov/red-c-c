@@ -14,18 +14,26 @@ const Home = () => {
   const [result, reexecuteQuery] = useQuery({ query: POSTS_QUERY, variables });
   const { data, fetching, error } = result;
 
+  console.log(data);
+
   const [updatedData, vote] = useMutation(VOTE_MUTATION);
 
-  const updoot = (postId) => {
+  const updoot = (post) => {
     return async () => {
-      const r = await vote({ value: UP_DOOT_VALUE, postId });
+      if (post.voteStatus === 1) {
+        return;
+      }
+      const r = await vote({ value: UP_DOOT_VALUE, postId: post.id });
       console.log(r);
     };
   };
 
-  const downdoot = (postId) => {
+  const downdoot = (post) => {
     return async () => {
-      const r = await vote({ value: DOWN_DOOT_VALUE, postId });
+      if (post.voteStatus === -1) {
+        return;
+      }
+      const r = await vote({ value: DOWN_DOOT_VALUE, postId: post.id });
       console.log(r);
     };
   };
@@ -50,8 +58,8 @@ const Home = () => {
                   <h4>posted by: {post.creator.username}</h4>
                   <p>{post.textSnippet}</p>
                   <p>points: {post.points}</p>
-                  <p onClick={updoot(post.id)}>updoot</p>
-                  <p onClick={downdoot(post.id)}>downdoot</p>
+                  <p onClick={updoot(post)}>updoot</p>
+                  <p onClick={downdoot(post)}>downdoot</p>
                 </div>
               );
             })
@@ -74,4 +82,4 @@ const Home = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient, { ssr: true })(Home);
+export default withUrqlClient(createUrqlClient)(Home);

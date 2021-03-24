@@ -10,6 +10,7 @@ const POSTS_QUERY = gql`
         createdAt
         updatedAt
         points
+        voteStatus
         creator{
           id
           username

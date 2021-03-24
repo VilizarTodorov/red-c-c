@@ -1,6 +1,6 @@
 import { cacheExchange } from "@urql/exchange-graphcache";
 import router from "next/router";
-import { dedupExchange, errorExchange, fetchExchange, stringifyVariables } from "urql";
+import { dedupExchange, errorExchange, fetchExchange, gql, stringifyVariables } from "urql";
 import { LOGIN } from "../constants/routes";
 import ME_QUERY from "../graphql/queries/me";
 
@@ -22,6 +22,35 @@ const createUrqlClient = (ssrExchange) => ({
       },
       updates: {
         Mutation: {
+          vote: (result, args, cache, info) => {
+            const { postId, value } = args;
+            const data = cache.readFragment(
+              gql`
+                fragment _ on Post {
+                  id
+                  points
+                  voteStatus
+                }
+              `,
+              { id: postId }
+            );
+
+            if (data) {
+              if (data.voteStatus === value) {
+                return;
+              }
+              const newPoints = data.points + (!data.voteStatus ? 1 : 2) * value;
+              cache.writeFragment(
+                gql`
+                  fragment __ on Post {
+                    points
+                    voteStatus
+                  }
+                `,
+                { id: postId, points: newPoints, voteStatus: value }
+              );
+            }
+          },
           createPost: (result, args, cache, info) => {
             const allFields = cache.inspectFields("Query");
             console.log(allFields);
