@@ -8,7 +8,7 @@ import isServerSide from "./isServerSide";
 const createUrqlClient = (ssrExchange, ctx) => {
   let cookie = "";
   if (isServerSide()) {
-    cookie = ctx?.req.headers.cookie
+    cookie = ctx?.req.headers.cookie;
   }
 
   return {
@@ -30,6 +30,9 @@ const createUrqlClient = (ssrExchange, ctx) => {
         },
         updates: {
           Mutation: {
+            deletePost: (result, args, cache, info) => {
+              cache.invalidate({ __typename: "Post", id: args.id });
+            },
             vote: (result, args, cache, info) => {
               const { postId, value } = args;
               const data = cache.readFragment(

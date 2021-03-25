@@ -49,33 +49,18 @@ const Home = () => {
       <main className={styles.main}>
         <Layout>
           <h1>Hello World</h1>
-          <nav>
-            {meResult.data?.me ? (
-              <Fragment>
-                <span>{meResult.data.me.username}</span>
-                <button onClick={() => logout()}>logout</button>
-              </Fragment>
-            ) : (
-              <Fragment>
-                <NextLink href={LOGIN}>
-                  <a>login</a>
-                </NextLink>
-                <NextLink href={REGISTER}>
-                  <a>register</a>
-                </NextLink>
-              </Fragment>
-            )}
-            <NextLink href={CREATE_POST}>
-              <a>create post</a>
-            </NextLink>
-          </nav>
           {!data ? (
             <div>...loading</div>
           ) : (
-            data.posts.posts.map((post) => {
-              return (
+            data.posts.posts.map((post) =>
+              !post ? null : (
+                // return (
                 <div style={{ border: "1px solid" }} key={post.id}>
-                  <h2>{post.title}</h2>
+                  <NextLink href={`/post/${post.id}`}>
+                    <a>
+                      <h2>{post.title}</h2>
+                    </a>
+                  </NextLink>
                   <h4>posted by: {post.creator.username}</h4>
                   <p>{post.textSnippet}</p>
                   <p>points: {post.points}</p>
@@ -86,8 +71,9 @@ const Home = () => {
                     downdoot
                   </p>
                 </div>
-              );
-            })
+                // );
+              )
+            )
           )}
           {data?.posts?.hasMore && (
             <button

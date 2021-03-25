@@ -5,6 +5,8 @@ import { useMutation, useQuery } from "urql";
 import createUrqlClient from "../../utils/createUrqlClient";
 import POST_QUERY from "../../graphql/queries/post";
 import DELETE_POST_MUTATION from "../../graphql/mutations/deletePostMutation";
+import { HOME } from "../../constants/routes";
+import NextLink from "next/link";
 
 const Post = (props) => {
   const router = useRouter();
@@ -31,11 +33,15 @@ const Post = (props) => {
       <button
         onClick={async () => {
           const result = await deletePost({ id: data.post.id });
-          console.log(result);
+          router.push(HOME);
         }}
       >
         delete post
       </button>
+
+      <NextLink href={`/post/edit/${data.post.id}`}>
+        <a>edit post</a>
+      </NextLink>
     </div>
   );
 };
