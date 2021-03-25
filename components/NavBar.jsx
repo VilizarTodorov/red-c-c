@@ -6,11 +6,10 @@ import ME_QUERY from "../graphql/queries/me";
 import LOGOUT_MUTATION from "../graphql/mutations/logoutMutation";
 import { withUrqlClient } from "next-urql";
 import createUrqlClient from "../utils/createUrqlClient";
-import isServerSide from "../utils/isServerSide";
 
 const NavBar = () => {
   const [updatedData, logout] = useMutation(LOGOUT_MUTATION);
-  const [result, reexecuteQuery] = useQuery({ query: ME_QUERY, pause: isServerSide() });
+  const [result, reexecuteQuery] = useQuery({ query: ME_QUERY });
   const { data, fetching, error } = result;
 
   return (

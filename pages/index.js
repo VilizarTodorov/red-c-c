@@ -5,16 +5,18 @@ import createUrqlClient from "../utils/createUrqlClient";
 import { useMutation, useQuery } from "urql";
 import POSTS_QUERY from "../graphql/queries/posts";
 import Layout from "../components/Layout";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import VOTE_MUTATION from "../graphql/mutations/voteMutation";
 import { DOWN_DOOT_VALUE, UP_DOOT_VALUE } from "../constants/values";
+import ME_QUERY from "../graphql/queries/me";
+import NextLink from "next/link";
+import { CREATE_POST, LOGIN, REGISTER } from "../constants/routes";
 
 const Home = () => {
+  const [meResult] = useQuery({ query: ME_QUERY });
   const [variables, setVariables] = useState({ limit: 10, cursor: null });
   const [result, reexecuteQuery] = useQuery({ query: POSTS_QUERY, variables });
   const { data, fetching, error } = result;
-
-  console.log(data);
 
   const [updatedData, vote] = useMutation(VOTE_MUTATION);
 
@@ -24,7 +26,6 @@ const Home = () => {
         return;
       }
       const r = await vote({ value: UP_DOOT_VALUE, postId: post.id });
-      console.log(r);
     };
   };
 
@@ -34,7 +35,6 @@ const Home = () => {
         return;
       }
       const r = await vote({ value: DOWN_DOOT_VALUE, postId: post.id });
-      console.log(r);
     };
   };
 
@@ -48,6 +48,26 @@ const Home = () => {
       <main className={styles.main}>
         <Layout>
           <h1>Hello World</h1>
+          <nav>
+            {meResult.data?.me ? (
+              <Fragment>
+                <span>{meResult.data.me.username}</span>
+                <button onClick={() => logout()}>logout</button>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <NextLink href={LOGIN}>
+                  <a>login</a>
+                </NextLink>
+                <NextLink href={REGISTER}>
+                  <a>register</a>
+                </NextLink>
+              </Fragment>
+            )}
+            <NextLink href={CREATE_POST}>
+              <a>create post</a>
+            </NextLink>
+          </nav>
           {!data ? (
             <div>...loading</div>
           ) : (
@@ -58,13 +78,17 @@ const Home = () => {
                   <h4>posted by: {post.creator.username}</h4>
                   <p>{post.textSnippet}</p>
                   <p>points: {post.points}</p>
-                  <p onClick={updoot(post)}>updoot</p>
-                  <p onClick={downdoot(post)}>downdoot</p>
+                  <p style={{ color: post.voteStatus === 1 && "green" }} onClick={updoot(post)}>
+                    updoot
+                  </p>
+                  <p style={{ color: post.voteStatus === -1 && "red" }} onClick={downdoot(post)}>
+                    downdoot
+                  </p>
                 </div>
               );
             })
           )}
-          {data?.posts?.posts.hasMore && (
+          {data?.posts?.hasMore && (
             <button
               onClick={() => {
                 setVariables({
@@ -82,4 +106,4 @@ const Home = () => {
   );
 };
 
-export default withUrqlClient(createUrqlClient)(Home);
+export default withUrqlClient(createUrqlClient, { ssr: true })(Home);

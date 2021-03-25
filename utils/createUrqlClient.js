@@ -3,107 +3,116 @@ import router from "next/router";
 import { dedupExchange, errorExchange, fetchExchange, gql, stringifyVariables } from "urql";
 import { LOGIN } from "../constants/routes";
 import ME_QUERY from "../graphql/queries/me";
+import isServerSide from "./isServerSide";
 
-const createUrqlClient = (ssrExchange) => ({
-  url: "http://localhost:4000/graphql",
-  fetchOptions: {
-    credentials: "include",
-  },
-  exchanges: [
-    dedupExchange,
-    cacheExchange({
-      keys: {
-        PaginatedPosts: () => null,
-      },
-      resolvers: {
-        Query: {
-          posts: cursorPagination(),
+const createUrqlClient = (ssrExchange, ctx) => {
+  let cookie = "";
+  if (isServerSide()) {
+    cookie = ctx?.req.headers.cookie
+  }
+
+  return {
+    url: "http://localhost:4000/graphql",
+    fetchOptions: {
+      credentials: "include",
+      headers: cookie ? { cookie } : undefined,
+    },
+    exchanges: [
+      dedupExchange,
+      cacheExchange({
+        keys: {
+          PaginatedPosts: () => null,
         },
-      },
-      updates: {
-        Mutation: {
-          vote: (result, args, cache, info) => {
-            const { postId, value } = args;
-            const data = cache.readFragment(
-              gql`
-                fragment _ on Post {
-                  id
-                  points
-                  voteStatus
-                }
-              `,
-              { id: postId }
-            );
-
-            if (data) {
-              if (data.voteStatus === value) {
-                return;
-              }
-              const newPoints = data.points + (!data.voteStatus ? 1 : 2) * value;
-              cache.writeFragment(
+        resolvers: {
+          Query: {
+            posts: cursorPagination(),
+          },
+        },
+        updates: {
+          Mutation: {
+            vote: (result, args, cache, info) => {
+              const { postId, value } = args;
+              const data = cache.readFragment(
                 gql`
-                  fragment __ on Post {
+                  fragment _ on Post {
+                    id
                     points
                     voteStatus
                   }
                 `,
-                { id: postId, points: newPoints, voteStatus: value }
+                { id: postId }
               );
-            }
-          },
-          createPost: (result, args, cache, info) => {
-            const allFields = cache.inspectFields("Query");
-            console.log(allFields);
-            const fieldInfos = allFields.filter((info) => info.fieldName === "posts");
-            fieldInfos.forEach((fi) => {
-              cache.invalidate("Query", "posts", fi.arguments);
-              console.log(fi);
-              console.log(fieldInfos);
-            });
-          },
-          logout: (result, args, cache, info) => {
-            cache.updateQuery({ query: ME_QUERY }, (data) => {
-              return {
-                me: null,
-              };
-            });
-          },
-          login: (result, args, cache, info) => {
-            cache.updateQuery({ query: ME_QUERY }, (data) => {
-              if (result.login.errors) {
-                return data;
-              } else {
-                return {
-                  me: result.login.user,
-                };
+
+              if (data) {
+                if (data.voteStatus === value) {
+                  return;
+                }
+                const newPoints = data.points + (!data.voteStatus ? 1 : 2) * value;
+                cache.writeFragment(
+                  gql`
+                    fragment __ on Post {
+                      points
+                      voteStatus
+                    }
+                  `,
+                  { id: postId, points: newPoints, voteStatus: value }
+                );
               }
-            });
-          },
-          register: (result, args, cache, info) => {
-            cache.updateQuery({ query: ME_QUERY }, (data) => {
-              if (result.register.errors) {
-                return data;
-              } else {
+            },
+            createPost: (result, args, cache, info) => {
+              const allFields = cache.inspectFields("Query");
+              console.log(allFields);
+              const fieldInfos = allFields.filter((info) => info.fieldName === "posts");
+              fieldInfos.forEach((fi) => {
+                cache.invalidate("Query", "posts", fi.arguments);
+                console.log(fi);
+                console.log(fieldInfos);
+              });
+            },
+            logout: (result, args, cache, info) => {
+              cache.updateQuery({ query: ME_QUERY }, (data) => {
                 return {
-                  me: result.register.user,
+                  me: null,
                 };
-              }
-            });
+              });
+            },
+            login: (result, args, cache, info) => {
+              cache.updateQuery({ query: ME_QUERY }, (data) => {
+                if (result.login.errors) {
+                  return data;
+                } else {
+                  return {
+                    me: result.login.user,
+                  };
+                }
+              });
+            },
+            register: (result, args, cache, info) => {
+              cache.updateQuery({ query: ME_QUERY }, (data) => {
+                if (result.register.errors) {
+                  return data;
+                } else {
+                  return {
+                    me: result.register.user,
+                  };
+                }
+              });
+            },
           },
         },
-      },
-    }),
-    errorExchange({
-      onError: (error, operation) => {
-        if (error?.message.includes("not authenticated")) {
-          router.push(LOGIN);
-        }
-      },
-    }),
-    ssrExchange,
-    fetchExchange,
-  ],
-});
+      }),
+      errorExchange({
+        onError: (error, operation) => {
+          if (error?.message.includes("not authenticated")) {
+            router.push(LOGIN);
+          }
+        },
+      }),
+      ssrExchange,
+      fetchExchange,
+    ],
+  };
+};
 
 const cursorPagination = () => {
   return (_parent, fieldArgs, cache, info) => {
