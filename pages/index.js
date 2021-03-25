@@ -17,6 +17,7 @@ const Home = () => {
   const [variables, setVariables] = useState({ limit: 10, cursor: null });
   const [result, reexecuteQuery] = useQuery({ query: POSTS_QUERY, variables });
   const { data, fetching, error } = result;
+  console.log(data);
 
   const [updatedData, vote] = useMutation(VOTE_MUTATION);
 
