@@ -1,12 +1,12 @@
 import { withUrqlClient } from "next-urql";
+import NextLink from "next/link";
 import { useRouter } from "next/router";
 import React from "react";
 import { useMutation, useQuery } from "urql";
-import createUrqlClient from "../../utils/createUrqlClient";
-import POST_QUERY from "../../graphql/queries/post";
-import DELETE_POST_MUTATION from "../../graphql/mutations/deletePostMutation";
 import { HOME } from "../../constants/routes";
-import NextLink from "next/link";
+import DELETE_POST_MUTATION from "../../graphql/mutations/deletePostMutation";
+import POST_QUERY from "../../graphql/queries/post";
+import createUrqlClient from "../../utils/createUrqlClient";
 
 const Post = (props) => {
   const router = useRouter();

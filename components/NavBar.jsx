@@ -1,13 +1,15 @@
-import React, { Fragment } from "react";
-import NextLink from "next/link";
-import { CREATE_POST, LOGIN, REGISTER } from "../constants/routes";
-import { useMutation, useQuery } from "urql";
-import ME_QUERY from "../graphql/queries/me";
-import LOGOUT_MUTATION from "../graphql/mutations/logoutMutation";
 import { withUrqlClient } from "next-urql";
+import NextLink from "next/link";
+import { useRouter } from "next/router";
+import React, { Fragment } from "react";
+import { useMutation, useQuery } from "urql";
+import { CREATE_POST, LOGIN, REGISTER } from "../constants/routes";
+import LOGOUT_MUTATION from "../graphql/mutations/logoutMutation";
+import ME_QUERY from "../graphql/queries/me";
 import createUrqlClient from "../utils/createUrqlClient";
 
 const NavBar = () => {
+  const router = useRouter();
   const [updatedData, logout] = useMutation(LOGOUT_MUTATION);
   const [result, reexecuteQuery] = useQuery({ query: ME_QUERY });
   const { data, fetching, error } = result;
@@ -17,7 +19,15 @@ const NavBar = () => {
       {data?.me ? (
         <Fragment>
           <span>{data.me.username}</span>
-          <button onClick={() => logout()}>logout</button>
+          <button
+            onClick={async () => {
+              await logout();
+
+              router.reload();
+            }}
+          >
+            logout
+          </button>
         </Fragment>
       ) : (
         <Fragment>

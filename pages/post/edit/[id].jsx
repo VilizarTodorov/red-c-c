@@ -4,10 +4,10 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQuery } from "urql";
 import Layout from "../../../components/Layout";
+import { HOME } from "../../../constants/routes";
+import UPDATE_POST_MUTATION from "../../../graphql/mutations/updatePostMutation";
 import POST_QUERY from "../../../graphql/queries/post";
 import createUrqlClient from "../../../utils/createUrqlClient";
-import UPDATE_POST_MUTATION from "../../../graphql/mutations/updatePostMutation";
-import { HOME } from "../../../constants/routes";
 
 const EditPost = (props) => {
   const router = useRouter();

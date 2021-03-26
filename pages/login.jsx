@@ -1,13 +1,13 @@
-import React, { Fragment } from "react";
+import { withUrqlClient } from "next-urql";
+import { useRouter } from "next/router";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "urql";
-import LOGIN_MUTATION from "../graphql/mutations/loginMutation";
-import { useRouter } from "next/router";
-import { HOME } from "../constants/routes";
-import { withUrqlClient } from "next-urql";
-import createUrqlClient from "../utils/createUrqlClient";
 import ForgottenPasswordLink from "../components/ForgottenPasswordLink";
 import Layout from "../components/Layout";
+import { HOME } from "../constants/routes";
+import LOGIN_MUTATION from "../graphql/mutations/loginMutation";
+import createUrqlClient from "../utils/createUrqlClient";
 // import { useIsAuth } from "../utils/useIsAuth";
 
 const Login = (props) => {

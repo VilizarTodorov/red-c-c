@@ -1,16 +1,16 @@
-import Head from "next/head";
-import styles from "../styles/Home.module.css";
 import { withUrqlClient } from "next-urql";
-import createUrqlClient from "../utils/createUrqlClient";
-import { useMutation, useQuery } from "urql";
-import POSTS_QUERY from "../graphql/queries/posts";
-import Layout from "../components/Layout";
-import { Fragment, useState } from "react";
-import VOTE_MUTATION from "../graphql/mutations/voteMutation";
-import { DOWN_DOOT_VALUE, UP_DOOT_VALUE } from "../constants/values";
-import ME_QUERY from "../graphql/queries/me";
+import Head from "next/head";
 import NextLink from "next/link";
-import { CREATE_POST, LOGIN, REGISTER } from "../constants/routes";
+import { useState } from "react";
+import { useMutation, useQuery } from "urql";
+import Layout from "../components/Layout";
+import { DOWN_DOOT_VALUE, UP_DOOT_VALUE } from "../constants/values";
+import VOTE_MUTATION from "../graphql/mutations/voteMutation";
+import ME_QUERY from "../graphql/queries/me";
+import POSTS_QUERY from "../graphql/queries/posts";
+import styles from "../styles/Home.module.css";
+import createUrqlClient from "../utils/createUrqlClient";
+
 
 const Home = () => {
   const [meResult] = useQuery({ query: ME_QUERY });

@@ -5,6 +5,15 @@ import { LOGIN } from "../constants/routes";
 import ME_QUERY from "../graphql/queries/me";
 import isServerSide from "./isServerSide";
 
+const invalidateAllPosts = (cache) => {
+  const allFields = cache.inspectFields("Query");
+  console.log(allFields);
+  const fieldInfos = allFields.filter((info) => info.fieldName === "posts");
+  fieldInfos.forEach((fi) => {
+    cache.invalidate("Query", "posts", fi.arguments);
+  });
+};
+
 const createUrqlClient = (ssrExchange, ctx) => {
   let cookie = "";
   if (isServerSide()) {
@@ -63,14 +72,7 @@ const createUrqlClient = (ssrExchange, ctx) => {
               }
             },
             createPost: (result, args, cache, info) => {
-              const allFields = cache.inspectFields("Query");
-              console.log(allFields);
-              const fieldInfos = allFields.filter((info) => info.fieldName === "posts");
-              fieldInfos.forEach((fi) => {
-                cache.invalidate("Query", "posts", fi.arguments);
-                console.log(fi);
-                console.log(fieldInfos);
-              });
+              invalidateAllPosts(cache);
             },
             logout: (result, args, cache, info) => {
               cache.updateQuery({ query: ME_QUERY }, (data) => {
@@ -89,6 +91,7 @@ const createUrqlClient = (ssrExchange, ctx) => {
                   };
                 }
               });
+              invalidateAllPosts(cache);
             },
             register: (result, args, cache, info) => {
               cache.updateQuery({ query: ME_QUERY }, (data) => {

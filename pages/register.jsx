@@ -1,12 +1,12 @@
+import { withUrqlClient } from "next-urql";
+import { useRouter } from "next/router";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "urql";
-import { useRouter } from "next/router";
-import REGISTER_MUTATION from "../graphql/mutations/registerMutation";
-import { HOME } from "../constants/routes";
-import { withUrqlClient } from "next-urql";
-import createUrqlClient from "../utils/createUrqlClient";
 import Layout from "../components/Layout";
+import { HOME } from "../constants/routes";
+import REGISTER_MUTATION from "../graphql/mutations/registerMutation";
+import createUrqlClient from "../utils/createUrqlClient";
 
 const Register = (props) => {
   const router = useRouter();
